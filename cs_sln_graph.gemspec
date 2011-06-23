@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "bin/cs_sln_graph",
+    "cs_sln_graph.gemspec",
     "lib/cs_sln_graph.rb",
     "lib/project.rb",
     "lib/vsfile_reader.rb",
