@@ -23,7 +23,7 @@ class Cs_Sln_Graph
 		@graph.node[:fontname] = "Trebuchet MS"
 		@graph.node[:fontsize] = "8"
 		@graph.node[:fillcolor]= "#ffeecc"
-		@graph.node[:fontcolor]= "#775500"
+		@graph.node[:fontcolor]= "#666666"
 		@graph.node[:margin]   = "0.0"
 
 		# set global edge options
@@ -43,11 +43,23 @@ class Cs_Sln_Graph
 			path = File.join(File.dirname(@input_path), project.path)
 			dependencies = VSFile_Reader.read_proj(path)
 			dependencies.each do |dep|
-				d_node = @graph.get_node(dep)
-				if d_node.nil?
-					d_node = @graph.add_node(dep)
+				if dep.class == Project
+					d_node = @graph.get_node(dep.name)
+					if d_node.nil?
+						d_node = @graph.add_node(dep.name)
+					end
+					@graph.add_edge(d_node, p_node)
+				else
+					if not dep.start_with?("System")
+						d_node = @graph.get_node(dep)
+						if d_node.nil?
+							d_node = @graph.add_node(dep)
+							d_node[:color] = "#66ddaa"
+							d_node[:fillcolor] = "#ccffee"
+						end
+						@graph.add_edge(d_node, p_node)
+					end
 				end
-				@graph.add_edge(d_node, p_node)
 			end
 		end
 		@graph.output(@format => @output_path)

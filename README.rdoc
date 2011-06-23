@@ -15,3 +15,7 @@ The -i argument specifies the path to your solution.
 The -o argument specifies the path to your output file (it will default to the directory your solution is in).
 
 -f specifies the format the output file should be in (default is png).
+
+== History
+* 0.0.2 - Don't display System libraries, color external dependencies as green.
+* 0.0.1 - Initial version

@@ -30,8 +30,18 @@ class VSFile_Reader
 			dependencies << items[0]
 		end
 		# find project dependencies
-		document.elements.each('//Project/ItemGroup/ProjectReference/Name') do |element|
-			dependencies << element.text
+		document.elements.each('//Project/ItemGroup/ProjectReference') do |element|
+			path = element.attributes["Include"]
+			name = ""
+			element.elements.each('Name') do |e|
+				name = e.text
+			end
+			id = ""
+			element.elements.each('Project') do |e|
+				id = e.text
+			end
+			proj = Project.new(id, name, path)
+			dependencies << proj
 		end
 		return dependencies
 	end
