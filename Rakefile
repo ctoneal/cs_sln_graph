@@ -15,10 +15,10 @@ Jeweler::Tasks.new do |gem|
   gem.name = "cs_sln_graph"
   gem.homepage = "http://github.com/ctoneal/cs_sln_graph"
   gem.license = "MIT"
-  gem.summary = %Q{Generates dependency graphs for C# Visual Studio solutions}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{Generates C# dependency graphs}
+  gem.description = %Q{Generates dependency graphs using GraphViz from C# solution files}
   gem.email = "ctoneal@gmail.com"
-  gem.authors = ["'Chris"]
+  gem.authors = ["Chris ONeal"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
   #  gem.add_runtime_dependency 'jabber4r', '> 0.1'

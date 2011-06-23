@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+require 'optparse'
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "lib", "cs_sln_graph.rb"))
+
+options = { :format => "png" }
+op = OptionParser.new do |x|
+	x.banner = "cs_sln_graph <options>"
+	x.separator ""
+	x.on("-i <sln_path>", String, "Solution file to generate a graph for.") do |i|
+		options[:sln_path] = i
+	end
+	x.on("-o <output_path>", String, "Output path.") do |o|
+		options[:output] = o
+	end
+	x.on("-f <format>", String, "Format to output") do |f|
+		options[:format] = f
+	end
+	x.on("-h", "Show this message") do
+		puts op
+		exit
+	end
+end
+begin
+	op.parse!(ARGV)
+rescue
+	puts "Could not parse command line arguments."
+	exit
+end
+
+#if not Cs_Sln_Graph.valid_format?(options[:format])
+#	puts "Invalid format."
+#	exit
+#end
+
+if not options.has_key?(:sln_path)
+	puts "No solution file given."
+	exit
+end
+
+if not options.has_key?(:output)
+	puts "No output file given.  Defaulting to 'graph' in the solution path."
+	options[:output] = File.join(File.dirname(options[:sln_path]), "graph")
+end
+
+g = Cs_Sln_Graph.new(options[:sln_path], options[:output], options[:format])
+g.graph
