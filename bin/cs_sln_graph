@@ -6,13 +6,13 @@ options = { :format => "png" }
 op = OptionParser.new do |x|
 	x.banner = "cs_sln_graph <options>"
 	x.separator ""
-	x.on("-i <sln_path>", String, "Solution file to generate a graph for.") do |i|
-		options[:sln_path] = i
+	x.on("-i <input>", String, "Solution or project file to generate a graph for.") do |i|
+		options[:input] = i
 	end
 	x.on("-o <output_path>", String, "Output path.") do |o|
 		options[:output] = o
 	end
-	x.on("-f <format>", String, "Format to output") do |f|
+	x.on("-f <format>", String, "Format to output (defaults to png)") do |f|
 		options[:format] = f
 	end
 	x.on("-h", "Show this message") do
@@ -32,15 +32,22 @@ end
 #	exit
 #end
 
-if not options.has_key?(:sln_path)
-	puts "No solution file given."
+if not options.has_key?(:input)
+	puts "No input file given."
 	exit
 end
 
 if not options.has_key?(:output)
-	puts "No output file given.  Defaulting to 'graph' in the solution path."
-	options[:output] = File.join(File.dirname(options[:sln_path]), "graph")
+	puts "No output file given.  Defaulting to 'graph' in the input path."
+	options[:output] = File.join(File.dirname(options[:input]), "graph." + options[:format])
 end
 
-g = Cs_Sln_Graph.new(options[:sln_path], options[:output], options[:format])
-g.graph
+g = Cs_Sln_Graph.new(options[:input], options[:output], options[:format])
+
+if options[:input].end_with?(".sln")
+	g.graph_sln
+elsif options[:input].end_with?("proj")
+	g.graph_proj
+else
+	puts "Invalid input file."
+end

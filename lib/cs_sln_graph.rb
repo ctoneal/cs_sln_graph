@@ -4,6 +4,7 @@ require 'rubygems'
 require 'graphviz'
 
 class Cs_Sln_Graph
+	# initialize the graph class
 	def initialize(input, output, format)
 		@input_path = input
 		@output_path = output
@@ -11,10 +12,9 @@ class Cs_Sln_Graph
 		@graph = GraphViz.new("G")
 		format_graph
 	end
-	
-	def format_graph
-		#@graph[:rankdir] = "LR"
 
+	# set up the default format for the graph
+	def format_graph
 		# set global node options
 		@graph.node[:color]    = "#ddaa66"
 		@graph.node[:style]    = "filled"
@@ -36,12 +36,49 @@ class Cs_Sln_Graph
 		@graph.edge[:arrowsize]= "0.5"
 	end
 	
-	def graph
+	# graph a solution file
+	def graph_sln
 		projects = VSFile_Reader.read_sln(@input_path)
 		projects.each do |project|
 			p_node = @graph.add_node(project.name)
-			path = File.join(File.dirname(@input_path), project.path)
-			dependencies = VSFile_Reader.read_proj(path)
+			dependencies = VSFile_Reader.read_proj(project.path)
+			dependencies.each do |dep|
+				if dep.class == Project
+					d_node = @graph.get_node(dep.name)
+					if d_node.nil?
+						d_node = @graph.add_node(dep.name)
+					end
+					@graph.add_edge(d_node, p_node)
+				else
+					if dep.start_with?("System.") || dep == "System"
+						next
+					end
+					d_node = @graph.get_node(dep)
+					if d_node.nil?
+						d_node = @graph.add_node(dep)
+						d_node[:color] = "#66ddaa"
+						d_node[:fillcolor] = "#ccffee"
+					end
+					@graph.add_edge(d_node, p_node)
+				end
+			end
+		end
+		@graph.output(@format => @output_path)
+	end
+	
+	# graph a project file
+	def graph_proj
+		projects = []
+		projects << Project.new(nil, File.basename(@input_path, File.extname(@input_path)), @input_path)
+		dependencies = VSFile_Reader.read_proj(@input_path)
+		dependencies.each do |dep|
+			if dep.class == Project
+				projects << dep
+			end
+		end
+		projects.each do |proj|
+			p_node = @graph.add_node(proj.name)
+			dependencies = VSFile_Reader.read_proj(proj.path)
 			dependencies.each do |dep|
 				if dep.class == Project
 					d_node = @graph.get_node(dep.name)

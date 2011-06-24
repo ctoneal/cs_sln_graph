@@ -2,6 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "project.rb"))
 require 'rexml/document'
 
 class VSFile_Reader
+	# get a list of projects from the solution file
 	def self.read_sln(path)
 		lines = []
 		projects = []
@@ -9,7 +10,7 @@ class VSFile_Reader
 		file.each_line do |line|
 			match_data = line.match(/^\s*Project\s*\(\s*\"\{[A-F0-9\-]{36}\}\"\s*\)\s*=\s*\"(\S+)\"\s*,\s*\"(.*\.(vcproj|csproj))\"\s*,\s*\"\{([A-F0-9\-]{36})\}\"\s*$/i)
 			if not match_data.nil?
-				proj = Project.new(match_data[4], match_data[1], match_data[2])
+				proj = Project.new(match_data[4], match_data[1], File.join(File.dirname(path), match_data[2]))
 				projects << proj
 			end
 		end
@@ -19,6 +20,7 @@ class VSFile_Reader
 		return projects
 	end
 	
+	# get a list of dependencies for the given project
 	def self.read_proj(path)
 		dependencies = []
 		file = File.open(path) { |f| f.read }
@@ -31,7 +33,7 @@ class VSFile_Reader
 		end
 		# find project dependencies
 		document.elements.each('//Project/ItemGroup/ProjectReference') do |element|
-			path = element.attributes["Include"]
+			path = File.join(File.dirname(path), element.attributes["Include"])
 			name = ""
 			element.elements.each('Name') do |e|
 				name = e.text
