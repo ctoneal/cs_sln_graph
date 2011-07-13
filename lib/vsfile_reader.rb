@@ -23,7 +23,11 @@ class VSFile_Reader
 	# get a list of dependencies for the given project
 	def self.read_proj(path)
 		dependencies = []
-		file = File.open(path) { |f| f.read }
+		begin
+			file = File.open(path) { |f| f.read }
+		rescue
+			return dependencies
+		end
 		document = REXML::Document.new(file)
 		# find external dependencies
 		document.elements.each('//Project/ItemGroup/Reference') do |element|
@@ -33,7 +37,7 @@ class VSFile_Reader
 		end
 		# find project dependencies
 		document.elements.each('//Project/ItemGroup/ProjectReference') do |element|
-			path = File.join(File.dirname(path), element.attributes["Include"])
+			dep_path = File.absolute_path(File.join(File.dirname(path), element.attributes["Include"]))
 			name = ""
 			element.elements.each('Name') do |e|
 				name = e.text
@@ -42,7 +46,7 @@ class VSFile_Reader
 			element.elements.each('Project') do |e|
 				id = e.text
 			end
-			proj = Project.new(id, name, path)
+			proj = Project.new(id, name, dep_path)
 			dependencies << proj
 		end
 		return dependencies

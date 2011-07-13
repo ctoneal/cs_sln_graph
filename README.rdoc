@@ -9,9 +9,9 @@ You will need to install GraphViz before using this gem.
 == Usage
 
 To install, use gem
-	
-	% gem install cs_sln_graph
-	
+    
+    % gem install cs_sln_graph
+    
 The -i argument specifies the path to your solution or project. 
 
 The -o argument specifies the path to your output file (it will default to the directory your solution is in).
@@ -19,6 +19,7 @@ The -o argument specifies the path to your output file (it will default to the d
 -f specifies the format the output file should be in (default is png).
 
 == History
+* 0.0.6 - Minor bug fixes.
 * 0.0.5 - Now can take project files as input.
 * 0.0.4 - OK, really fix it now
 * 0.0.3 - Fix dependencies on ruby-graphviz
